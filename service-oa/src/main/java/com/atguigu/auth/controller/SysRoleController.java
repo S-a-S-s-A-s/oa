@@ -4,6 +4,7 @@ import com.atguigu.auth.service.SysRoleService;
 import com.atguigu.common.config.exception.GuiguException;
 import com.atguigu.common.result.Result;
 import com.atguigu.model.system.SysRole;
+import com.atguigu.vo.system.AssignRoleVo;
 import com.atguigu.vo.system.SysRoleQueryVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,6 +15,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 @Api(tags = "角色管理")
 @RestController
 @RequestMapping("/admin/system/sysRole")
@@ -21,20 +24,22 @@ public class SysRoleController {
     //注入service
     @Autowired
     private SysRoleService sysRoleService;
-    //查询所有角色
-    @ApiOperation("得到所有角色")
-    @GetMapping("/findAll")
-    public Result findAll(){
-        List<SysRole> sysRoles = sysRoleService.list();
-        try {
-            int i = 10/0;
-        }catch (Exception e){
-            throw new GuiguException(20001,"执行了自定义异常处理");
-        }
 
-
-        return Result.ok(sysRoles);
+    @ApiOperation("查询所有角色及用户所属角色")
+    @GetMapping("toAssign/{id}")
+    public Result toAssign(@PathVariable Long id){
+        Map<String,Object> map = sysRoleService.toAssign(id);
+        return Result.ok(map);
     }
+
+    @ApiOperation("分配角色")
+    @PostMapping("doAssign")
+    public Result doAssign(@RequestBody AssignRoleVo assignRoleVo){
+        sysRoleService.doAssign(assignRoleVo);
+        return Result.ok(null);
+    }
+
+    //查询所有角色
     @ApiOperation("条件分页查询")
     @GetMapping("{page}/{limit}")
     public Result pageQuery(@PathVariable Long page, @PathVariable Long limit, SysRoleQueryVo sysRoleQueryVo){
@@ -44,8 +49,8 @@ public class SysRoleController {
         if (!StringUtils.isEmpty(roleName)){
             queryWrapper.like(SysRole::getRoleName, roleName);
         }
-        sysRoleService.page(sysRolePage,queryWrapper);
-        return Result.ok(sysRolePage);
+        Page<SysRole> rolePage = sysRoleService.page(sysRolePage, queryWrapper);
+        return Result.ok(rolePage);
     }
     @ApiOperation("添加角色")
     @PostMapping ("save")

@@ -54,9 +54,9 @@ public class Knife4jConfig {
 
         return new ApiInfoBuilder()
                 .title("后台管理系统-API文档")
-                .description("本文档描述了后台管理系统微服务接口定义")
+                .description("本文档描述了后台管理系统接口定义")
                 .version("1.0")
-                .contact(new Contact("atguigu", "http://atguigu.com", "atguigu@qq.com"))
+                .contact(new Contact("sas", "http://etasas.work", "2838576429@qq.com"))
                 .build();
     }
 
